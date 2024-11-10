@@ -98,7 +98,6 @@ void login(){
         fgets(password,sizeof(password),stdin);
         password[strcspn(password,"\n")]=0;
 
-        
         rewind(file);
 
         while (fgets(storedUsername,sizeof(storedUsername),file) != NULL) {
