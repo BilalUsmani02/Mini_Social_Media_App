@@ -3,6 +3,7 @@
 
 //username length=20
 int run=1,loggedIn=0;
+char currentUser[20];
 
 void registeration();
 void login();
@@ -126,8 +127,10 @@ void login(){
                 printf("\n\n---Login Successful---\n\n\n");
                 loggedIn=1;
                 found=1;
+                currentUser=username;
                 break;
             }
+            
 
         }
         if (found==0){
