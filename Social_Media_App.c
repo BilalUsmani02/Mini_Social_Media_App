@@ -6,34 +6,50 @@ int run=1,loggedIn=0;
 
 void registeration();
 void login();
+void postMenu();
+void createPost();
+void viewPost();
+void deletePost();
+
 
 int main(void){
     int choice;
 
     while (run==1){
-    	printf("------------------------\n");
-    	printf("---Welcome to Tweet---");
-    	printf("\n------------------------\n");
-        printf("\n-Login      = 1\n");
-        printf("-Register   = 2\n");
-        printf("\nChoose an option:");
-        scanf("%d",&choice);
-        getchar();
-        
-        switch (choice){
-        case 1:
-            login();
-            break;
-        
-        case 2:
-            registeration();
-            break;
+        if (loggedIn==1){
+            postMenu();
+        }else{
+            printf("------------------------\n");
+            printf("---Welcome to Tweet---");
+            printf("\n------------------------\n\n");
+            printf("-Login      = 1\n");
+            printf("-Register   = 2\n");
+            printf("\n\n-To exit    =0\n");
+            printf("\nChoose an option:");
+            scanf("%d",&choice);
+            getchar();
+            
+            switch (choice){
+            case 1:
+                login();
+                break;
+            
+            case 2:
+                registeration();
+                break;
 
-        default:
-            printf("Invalid option");
-            break;
+            case 0:
+                printf("Good Bye !");
+                run=0;
+                break;
+
+            default:
+                printf("Invalid option");
+                break;
+            }
         }
     }
+
 }
 
 void registeration(){
@@ -122,3 +138,42 @@ void login(){
     fclose(file);
 }
 
+void postMenu(){
+    int choice;
+
+    while(run==1){
+        printf("\n\n-------------------\n");
+        printf("-  Post Menu  -");
+        printf("\n-------------------\n\n");
+        printf("- To Create a post = 1\n");
+        printf("- To View posts    = 2\n");
+        printf("- To Delete posts  = 3\n\n");
+        printf("- To Logout        = 0");
+        scanf("%d",&choice);
+        getchar();
+
+        switch (choice){
+        case 1:
+            createPost();
+            break;
+
+        case 2:
+            viewPost();    
+            break;
+
+        case 3:
+            deletePost();
+            break;
+
+        case 0:
+            printf("\n\n-- Good Bye ! --\n\n");
+            run=0;
+            printf("\n\n--You have successfuly logged out!--\n\n");
+            break;
+
+        default:
+            printf("Invalid choice selected");
+            break;
+        }
+    }
+}
