@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include<time.h>
 
 //username length=20
 int run=1,loggedIn=0;
@@ -12,6 +13,9 @@ void createPost();
 void viewPost();
 void deletePost();
 
+typedef struct{
+	char user[20] , time[30], category[30], post[251];
+}post;
 
 int main(void){
     int choice;
@@ -127,7 +131,7 @@ void login(){
                 printf("\n\n---Login Successful---\n\n\n");
                 loggedIn=1;
                 found=1;
-                currentUser=username;
+                strcpy(currentUser,username);
                 break;
             }
             
@@ -139,6 +143,7 @@ void login(){
 
     }
     fclose(file);
+    
 }
 
 void postMenu(){
@@ -170,7 +175,8 @@ void postMenu(){
 
         case 0:
             printf("\n\n-- Good Bye ! --\n\n");
-            run=0;
+            run = 0;
+			loggedIn = 0;
             printf("\n\n--You have successfuly logged out!--\n\n");
             break;
 
@@ -179,4 +185,86 @@ void postMenu(){
             break;
         }
     }
+}
+
+
+
+
+
+
+void createPost(){
+	FILE *file=fopen("posts.txt","a+");
+	post content;
+	if (file == NULL) {
+		printf("Error opening file!\n"); 
+		return;
+	}
+	int ch,x=0;
+	strcpy(content.user,currentUser);
+	printf("Choose a category for your Post:\n 1. Educational\n 2. Inspirational\n 3. Sports\n 4. Technology\n 5. Health and fitness\n 6. Travel\n 7. Food and cooking\n 8. Finance\n 9. Entertainment\n 10. Gaming\n 11. Environment\n Enter your choice: ");
+    scanf("%d", &ch);
+    while(x!=1){
+		x=1;
+	    switch (ch) {
+	        case 1:
+	            strcpy(content.category,"Educational");
+	            break;
+	        case 2:
+	            strcpy(content.category,"Inspirational");
+	            break;
+	        case 3:
+	            strcpy(content.category,"Sports");
+	            break;
+	        case 4:
+	            strcpy(content.category,"Technology");
+	            break;
+	        case 5:
+	            strcpy(content.category,"Health and Fitness");
+	            break;
+	        case 6:
+	            strcpy(content.category,"Travel");
+	            break;
+	        case 7:
+	            strcpy(content.category,"Food and Cooking");
+	            break;
+	        case 8:
+	            strcpy(content.category,"Finance");
+	            break;
+	        case 9:
+	            strcpy(content.category,"Entertainment");
+	            break;
+	        case 10:
+	            strcpy(content.category,"Gaming");
+	            break;
+	        case 11:
+	            strcpy(content.category,"Environment");
+	            break;
+	        default:
+	            printf("\nInvalid choice. Try Again\n");
+	            x=0;
+	            break;
+	    }
+	}
+	
+	//getting time and date from system
+	static char buffer[80];
+    time_t t;
+    struct tm *tm_info;
+    time(&t);
+    tm_info = localtime(&t);
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info);
+    strcpy(content.time,buffer);
+    
+    //inputting post from user
+    getchar();
+    printf("Enter your post (max 250 characters): \n");
+    fgets(content.post,sizeof(content.post),stdin);
+    
+    
+    //putting everything into a file
+    fputs(content.user,file);
+    fputs(content.category,file);
+    fputs(content.time,file);
+    fputs(content.post,file);
+    fclose(file);
 }
