@@ -11,7 +11,7 @@ void login();
 void postMenu();
 void createPost();
 void viewPost();
-void deletePost();
+
 
 typedef struct{
 	char user[20] , time[30], category[30], post[251];
@@ -155,8 +155,8 @@ void postMenu(){
         printf("\n-------------------\n\n");
         printf("- To Create a post = 1\n");
         printf("- To View posts    = 2\n");
-        printf("- To Delete posts  = 3\n\n");
-        printf("- To Logout        = 0");
+        printf("- To Logout        = 0\n");
+        printf("Enter your Choice: ");
         scanf("%d",&choice);
         getchar();
 
@@ -169,13 +169,9 @@ void postMenu(){
             viewPost();    
             break;
 
-        case 3:
-            deletePost();
-            break;
-
         case 0:
             printf("\n\n-- Good Bye ! --\n\n");
-            run = 0;
+            run=0;
 			loggedIn = 0;
             printf("\n\n--You have successfuly logged out!--\n\n");
             break;
@@ -199,6 +195,7 @@ void createPost(){
 		printf("Error opening file!\n"); 
 		return;
 	}
+	//asking user to select a post category
 	int ch,x=0;
 	strcpy(content.user,currentUser);
 	printf("Choose a category for your Post:\n 1. Educational\n 2. Inspirational\n 3. Sports\n 4. Technology\n 5. Health and fitness\n 6. Travel\n 7. Food and cooking\n 8. Finance\n 9. Entertainment\n 10. Gaming\n 11. Environment\n Enter your choice: ");
@@ -259,12 +256,128 @@ void createPost(){
     getchar();
     printf("Enter your post (max 250 characters): \n");
     fgets(content.post,sizeof(content.post),stdin);
+    content.post[strcspn(content.post, "\n")] = '\0'; 
     
     
-    //putting everything into a file
-    fputs(content.user,file);
-    fputs(content.category,file);
-    fputs(content.time,file);
-    fputs(content.post,file);
+    //putting everything into the file in a new line
+    fprintf(file, "%s\n", content.user);
+    fprintf(file, "%s\n", content.category);
+    fprintf(file, "%s\n", content.time);
+    fprintf(file, "%s\n", content.post);
+}
+
+
+void viewPost() {
+    int choice, x, found = 0;
+    char username[20], category[30];
+
+    // Get user's choice for search type
+    while (1) {
+        printf("How do you want to search posts?\n");
+        printf("1. By Category\n2. By Username\nEnter your choice: ");
+        scanf("%d", &choice);
+
+        if (choice == 1) {
+            printf("Choose a category:\n 1. Educational\n 2. Inspirational\n 3. Sports\n 4. Technology\n 5. Health and fitness\n 6. Travel\n 7. Food and cooking\n 8. Finance\n 9. Entertainment\n 10. Gaming\n 11. Environment\n Enter your choice: ");
+			scanf("%d",&x);
+
+            
+            switch (x) {
+                case 1: 
+					strcpy(category, "Educational"); 
+					break;
+                case 2: 
+					strcpy(category, "Inspirational"); 
+					break;
+                case 3: 
+					strcpy(category, "Sports"); 
+					break;
+                case 4: 
+					strcpy(category, "Technology"); 
+					break;
+                case 5: 
+					strcpy(category, "Health and Fitness"); 
+					break;
+                case 6: 
+					strcpy(category, "Travel"); 
+					break;
+                case 7: 
+					strcpy(category, "Food and Cooking"); 
+					break;
+                case 8: 
+					strcpy(category, "Finance"); 
+					break;
+                case 9: 
+					strcpy(category, "Entertainment"); 
+					break;
+                case 10: 
+					strcpy(category, "Gaming"); 
+					break;
+                case 11: 
+					strcpy(category, "Environment"); 
+					break;
+                default:
+                    printf("Invalid choice. Try again.\n");
+                    continue;//if choice is invalid the line below are not gonna be executed
+                    //instead the loop will reiterate from the start 
+            }
+            break;
+        } else if (choice == 2) {
+            printf("Enter the Username: ");
+            getchar(); 
+            fgets(username, sizeof(username), stdin);
+            username[strcspn(username, "\n")] = '\0'; 
+            break; 
+        } else {
+            printf("Invalid choice. Try again.\n");
+        }
+    }
+
+    
+    FILE *file = fopen("posts.txt", "r");
+    if (file==NULL) {
+        printf("Error: Could not open file.\n");
+        return;
+    }
+
+    post search;
+    while (1) {
+    	//reading file 4 lines at a time
+    	if (fgets(search.user, sizeof(search.user), file) == NULL) {
+        	break;
+	    }
+	    if (fgets(search.category, sizeof(search.category), file) == NULL) {
+	        break;
+	    }
+	    if (fgets(search.time, sizeof(search.time), file) == NULL) {
+	        break;
+	    }
+	    if (fgets(search.post, sizeof(search.post), file) == NULL) {
+	        break;
+	    }
+	    
+	    search.user[strcspn(search.user, "\n")] = '\0';
+	    search.category[strcspn(search.category, "\n")] = '\0';
+	    search.time[strcspn(search.time, "\n")] = '\0';
+	    search.post[strcspn(search.post, "\n")] = '\0';
+        //strcspn(search.user, "\n")  gives the where \n is located so we can remove it
+
+        //Checking for matching posts and displaying them :)
+        if ((choice == 2 && strcmp(search.user, username) == 0) ||
+            (choice == 1 && strcmp(search.category, category) == 0)) {
+            printf("(Username): %s\n", search.user);
+            printf("(Category): %s\n", search.category);
+            printf("(Time & Date): %s\n", search.time);
+            printf("(Post Text): %s\n", search.post);
+            printf("-------------------------------\n");
+            found = 1;
+        }
+    }
+
+    if (found==0) {
+        printf("No matching posts found.\n");
+    }
+
     fclose(file);
 }
+
