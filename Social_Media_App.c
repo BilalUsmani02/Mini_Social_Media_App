@@ -11,7 +11,7 @@ void login();
 void postMenu();
 void createPost();
 void viewPost();
-
+void xorEncryptDecrypt();
 
 typedef struct{
 	char user[20] , time[30], category[30], post[251];
@@ -90,6 +90,7 @@ void registeration(){
 
     printf("Enter a password: ");
     fgets(password,sizeof(password),stdin);
+    xorEncryptDecrypt(password);
     password[strcspn(password, "\n")] = 0;
 
     fprintf(file,"%s\n%s\n",username,password);
@@ -117,6 +118,7 @@ void login(){
 
         printf("Enter your password: ");
         fgets(password,sizeof(password),stdin);
+        xorEncryptDecrypt(password);
         password[strcspn(password,"\n")]=0;
 
         rewind(file);
@@ -268,6 +270,7 @@ void createPost(){
 
 
 void viewPost() {
+	
     int choice, x, found = 0;
     char username[20], category[30];
 
@@ -381,3 +384,10 @@ void viewPost() {
     fclose(file);
 }
 
+void xorEncryptDecrypt(char *text) {
+	char key = 'K'; // Fixed key
+    int textLength = strlen(text); //text length for the loop 
+    for (int i = 0;i<textLength; i++) {
+        text[i] = text[i] ^ key;
+    }
+}
