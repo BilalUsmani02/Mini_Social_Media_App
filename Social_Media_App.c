@@ -65,6 +65,10 @@ void registeration(){
     int error=1;
     
     FILE *file=fopen("users.txt","a+");
+    if (file == NULL) {
+		printf("Error opening file!\n"); 
+		return;
+	}
     
     printf("\n-------------------\n");
     printf("-Registration Page-");
@@ -108,6 +112,10 @@ void login(){
     int found=0;
     
     FILE *file=fopen("users.txt","r");
+    if (file == NULL) {
+		printf("\nError opening file!\n"); 
+		return;
+	}
     
     printf("\n-------------------\n");
     printf("-   Login Page    -");
