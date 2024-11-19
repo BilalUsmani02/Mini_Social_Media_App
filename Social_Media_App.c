@@ -302,7 +302,8 @@ void viewPost() {
     	printf("\n-------------------\n\n");
         printf("How do you want to search posts?\n\n");
         printf("1. By Category\n2. By Username\n\nEnter your choice: ");
-        scanf("%d", &choice);
+        getchar();
+		scanf("%d", &choice);
         printf("\n-----------------\n");
 
         if (choice == 1) {
