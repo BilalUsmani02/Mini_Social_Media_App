@@ -28,7 +28,7 @@ int main(void){
             loggedIn=0;
         }else{
             printf("------------------------\n");
-            printf("---Welcome to Tweet---");
+            printf("---Welcome to Post Vault---");
             printf("\n------------------------\n\n");
             printf("-Login      = 1\n");
             printf("-Register   = 2\n");
@@ -424,12 +424,11 @@ void xorEncryptDecrypt(char *text) {
 }
 
 void deleteUserPosts(char *currentUser) {
-	post content;
-    int skip = 0;
-    
+    post content;
+    int postCount = 0, choice = 0, currentPost = 0;
     FILE *file = fopen("posts.txt", "r");
     FILE *tempFile = fopen("temp.txt", "w");
-    
+
     if (file == NULL || tempFile == NULL) {
         printf("Error opening file!\n");
         if (file != NULL) fclose(file);
@@ -437,41 +436,94 @@ void deleteUserPosts(char *currentUser) {
         return;
     }
 
+    // First, display all posts by the user
+    printf("\n\n-------------------\n");
+    printf("-  Your Posts  -");
+    printf("\n-------------------\n\n");
     
-
     while (1) {
-        // reading file 4 lines at a time
-        if (fgets(content.user, sizeof(content.user), file) == NULL) 
-			break;
-        if (fgets(content.category, sizeof(content.category), file) == NULL) 
-			break;
-        if (fgets(content.time, sizeof(content.time), file) == NULL) 
-			break;
-        if (fgets(content.post, sizeof(content.post), file) == NULL) 
-			break;
+        if (fgets(content.user, sizeof(content.user), file) == NULL)
+            break;
+        if (fgets(content.category, sizeof(content.category), file) == NULL)
+            break;
+        if (fgets(content.time, sizeof(content.time), file) == NULL)
+            break;
+        if (fgets(content.post, sizeof(content.post), file) == NULL)
+            break;
 
-        // removing \n
+        // Removing \n
         content.user[strcspn(content.user, "\n")] = '\0';
         content.category[strcspn(content.category, "\n")] = '\0';
         content.time[strcspn(content.time, "\n")] = '\0';
         content.post[strcspn(content.post, "\n")] = '\0';
 
-        // Skip posts of the logged in user
-        skip = strcmp(content.user, currentUser) == 0;
-
-        if (skip==0) {
-            // Write the remaining posts to the temporary file
-            fprintf(tempFile, "%s\n%s\n%s\n%s\n", content.user, content.category, content.time, content.post);
+        if (strcmp(content.user, currentUser) == 0) {
+            postCount++;
+            printf("\nPost %d:\n", postCount);
+            printf("Category: %s\n", content.category);
+            printf("Time & Date: %s\n", content.time);
+            printf("Post Text: %s\n", content.post);
+            printf("-------------------------------\n");
         }
+    }
+
+    if (postCount == 0) {
+        printf("No posts found for user '%s'.\n", currentUser);
+        fclose(file);
+        fclose(tempFile);
+        remove("temp.txt");
+        return;
+    }
+
+    // Prompt the user to select a post to delete
+    while (1) {
+        printf("Enter the number of the post to delete (1-%d): ", postCount);
+        scanf("%d", &choice);
+        getchar();
+        if (choice >= 1 && choice <= postCount) break;
+        printf("Invalid choice. Please try again.\n");
+    }
+
+    rewind(file); // Rewind to start of file for processing
+
+    // Copy all posts except the chosen one to the temp file
+    postCount = 0;
+    while (1) {
+        if (fgets(content.user, sizeof(content.user), file) == NULL)
+            break;
+        if (fgets(content.category, sizeof(content.category), file) == NULL)
+            break;
+        if (fgets(content.time, sizeof(content.time), file) == NULL)
+            break;
+        if (fgets(content.post, sizeof(content.post), file) == NULL)
+            break;
+
+        // Removing \n
+        content.user[strcspn(content.user, "\n")] = '\0';
+        content.category[strcspn(content.category, "\n")] = '\0';
+        content.time[strcspn(content.time, "\n")] = '\0';
+        content.post[strcspn(content.post, "\n")] = '\0';
+
+        if (strcmp(content.user, currentUser) == 0) {
+            currentPost++;
+            if (currentPost == choice) {
+                // Skip the post the user wants to delete
+                continue;
+            }
+        }
+
+        // Write all other posts to the temp file
+        fprintf(tempFile, "%s\n%s\n%s\n%s\n", content.user, content.category, content.time, content.post);
     }
 
     fclose(file);
     fclose(tempFile);
 
-    // Replace the original file with the temporary file
+    // Replace the original file with the temp file
     if (remove("posts.txt") != 0 || rename("temp.txt", "posts.txt") != 0) {
         printf("Error updating posts file.\n");
     } else {
-        printf("\n\\--- All posts of user '%s' deleted successfully :) ! ---/\n", currentUser);
+        printf("\n--- Post %d deleted successfully! ---\n", choice);
     }
 }
+
